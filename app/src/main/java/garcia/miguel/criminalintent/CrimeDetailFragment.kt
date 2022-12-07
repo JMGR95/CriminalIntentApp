@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -64,6 +65,14 @@ class CrimeDetailFragment : Fragment() {
                 }
             }
         }
+
+        setFragmentResultListener(
+            DatePickerFragment.REQUEST_KEY_DATE
+        ) { _, bundle ->
+            val newDate =
+                bundle.getSerializable(DatePickerFragment.BUNDLE_KEY_DATE) as Date
+            crimeDetailViewModel.updateCrime { it.copy(date = newDate) }
+        }
     }
 
     override fun onDestroyView() {
@@ -79,7 +88,7 @@ class CrimeDetailFragment : Fragment() {
             crimeDate.text = crime.date.toString()
             crimeDate.setOnClickListener {
                 findNavController().navigate(
-                    CrimeDetailFragmentDirections.selectDate()
+                    CrimeDetailFragmentDirections.selectDate(crime.date)
                 )
             }
             crimeSolved.isChecked = crime.isSolved
